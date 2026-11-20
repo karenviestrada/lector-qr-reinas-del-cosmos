@@ -64,6 +64,10 @@
       CERRAR CÁMARA
     </button>
 
+<button onclick="probarConexion()">
+  PROBAR CONEXIÓN
+</button>
+
     <p id="estado">Cámara pendiente de iniciar.</p>
     <div id="resultado">Esperando un QR de prueba...</div>
 
@@ -137,6 +141,30 @@
       document.getElementById("estado").textContent =
         "Cámara cerrada.";
     }
+    
+function probarConexion() {
+  const destino = window.open(
+    'https://script.google.com/macros/s/AKfycbzYn0RZ0wx1GZTkGuKhc6VEIYWGbalzdI3w6DWJ9P92R_HO6mJJC1yWdEI1_gBYFVH_/exec',
+    'reinas_acceso'
+  );
+
+  if (!destino) {
+    alert('Permite las ventanas emergentes para esta prueba.');
+    return;
+  }
+
+  let intentos = 0;
+  const intervalo = setInterval(() => {
+    destino.postMessage(
+      { tipo: 'REINAS_QR_PRUEBA' },
+      '*'
+    );
+    intentos++;
+
+    if (intentos >= 10) clearInterval(intervalo);
+  }, 1000);
+}
+
   </script>
 </body>
 </html>
