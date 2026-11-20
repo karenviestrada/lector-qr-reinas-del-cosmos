@@ -142,20 +142,34 @@
         "Cámara cerrada.";
     }
     
-function probarConexion() {
-  const destino = window.open(
-    'https://script.google.com/macros/s/AKfycbzxsRGVlJzs-jLJGSFxYLyWcr0m-g-JfiVW77YuHJCFvNq6lrbfHDR_iz7znyy4iHwy/exec',
-    'reinas_acceso'
-  );
 
-  if (!destino) {
-    alert('Permite las ventanas emergentes para esta prueba.');
-    return;
+async function probarConexion() {
+  const url = 'https://script.google.com/macros/s/AKfycbzxsRGVlJzs-jLJGSFxYLyWcr0m-g-JfiVW77YuHJCFvNq6lrbfHDR_iz7znyy4iHwy/exec';
+
+  const estado = document.getElementById('estado');
+  estado.textContent = 'Enviando prueba de conexión...';
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: 'PRUEBA_CONEXION_REINAS_DEL_COSMOS'
+    });
+
+    estado.textContent =
+      'Solicitud enviada. Falta confirmar que Apps Script la recibió.';
+  } catch (error) {
+    estado.textContent = 'No se pudo enviar la solicitud: ' + error.message;
   }
+}
+
 
   let intentos = 0;
   const intervalo = setInterval(() => {
-    destino.postMessage(
+  destino.postMessage(
       { tipo: 'REINAS_QR_PRUEBA' },
       '*'
     );
