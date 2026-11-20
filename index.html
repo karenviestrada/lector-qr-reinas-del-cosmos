@@ -167,17 +167,7 @@ async function probarConexion() {
 }
 
 
-  let intentos = 0;
-  const intervalo = setInterval(() => {
-  destino.postMessage(
-      { tipo: 'REINAS_QR_PRUEBA' },
-      '*'
-    );
-    intentos++;
-
-    if (intentos >= 10) clearInterval(intervalo);
-  }, 1000);
-}
+ 
 
   </script>
 </body>
