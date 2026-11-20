@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REINAS DEL COSMOS | Lector QR</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: #170b23;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h1 { color: #e6bb65; font-size: 26px; }
+    .subtitulo { color: #f0d7ff; }
+    .panel {
+      max-width: 450px;
+      margin: 24px auto;
+      padding: 20px;
+      background: #30203f;
+      border: 1px solid #a477bc;
+      border-radius: 16px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #d5a64f;
+      color: #211127;
+      font-size: 17px;
+      font-weight: bold;
+    }
+    #lector { width: 100%; margin: 16px auto; }
+    #resultado {
+      overflow-wrap: anywhere;
+      padding: 12px;
+      border-radius: 8px;
+      background: #21152e;
+      min-height: 55px;
+    }
+    .nota { font-size: 13px; color: #d7c5df; }
+  </style>
+</head>
+<body>
+  <h1>REINAS DEL COSMOS</h1>
+  <p class="subtitulo">Lector QR | Prueba de cámara</p>
+
+  <div class="panel">
+    <button id="abrir" onclick="abrirCamara()">
+      📷 ABRIR ESCÁNER
+    </button>
+
+    <div id="lector"></div>
+
+    <button onclick="cerrarCamara()">
+      CERRAR CÁMARA
+    </button>
+
+    <p id="estado">Cámara pendiente de iniciar.</p>
+    <div id="resultado">Esperando un QR de prueba...</div>
+
+    <p class="nota">
+      Modo de prueba: no valida boletos
+      ni registra entradas.
+    </p>
+  </div>
+
+  <script>
+    let escaner = null;
+    let iniciando = false;
+
+    async function abrirCamara() {
+      if (iniciando || escaner) return;
+
+      if (typeof Html5Qrcode === "undefined") {
+        document.getElementById("estado").textContent =
+          "No se cargó la biblioteca del lector.";
+        return;
+      }
+
+      iniciando = true;
+      document.getElementById("estado").textContent =
+        "Solicitando permiso de cámara...";
+
+      escaner = new Html5Qrcode("lector");
+
+      try {
+        await escaner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (texto) => {
+            document.getElementById("resultado").textContent =
+              "QR detectado correctamente.";
+            document.getElementById("estado").textContent =
+              "¡La cámara y el lector funcionan!";
+            // No mostramos ni enviamos el contenido del QR.
+          },
+          () => {}
+        );
+
+        document.getElementById("estado").textContent =
+          "Cámara abierta. Apunta a un QR de prueba.";
+      } catch (error) {
+        document.getElementById("estado").textContent =
+          "No se pudo abrir la cámara: " +
+          (error.message || String(error));
+        try { escaner.clear(); } catch (e) {}
+        escaner = null;
+      } finally {
+        iniciando = false;
+      }
+    }
+
+    async function cerrarCamara() {
+      if (!escaner) return;
+      const actual = escaner;
+      escaner = null;
+
+      try {
+        if (actual.isScanning) await actual.stop();
+        actual.clear();
+      } catch (error) {
+        console.error(error);
+      }
+
+      document.getElementById("estado").textContent =
+        "Cámara cerrada.";
+    }
+  </script>
+</body>
+</html>
