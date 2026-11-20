@@ -96,13 +96,16 @@
         await escaner.start(
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 220, height: 220 } },
-          (texto) => {
-            document.getElementById("resultado").textContent =
-              "QR detectado correctamente.";
-            document.getElementById("estado").textContent =
-              "¡La cámara y el lector funcionan!";
-            // No mostramos ni enviamos el contenido del QR.
-          },
+       (texto) => {
+  document.getElementById("resultado").textContent =
+    "QR detectado correctamente.";
+
+  document.getElementById("estado").textContent =
+    "Lector funcionando. Conexión pendiente de prueba.";
+
+  // Por seguridad, todavía no enviamos
+  // ningún código de boleto.
+},
           () => {}
         );
 
